@@ -6,29 +6,50 @@ on:
 jobs:
   build:
     runs-on: macos-26
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Select Xcode
         run: |
-          XCODE_PATH=$(ls -d /Applications/Xcode*.app | head -n 1)
+          XCODE_PATH="/Applications/Xcode_26.0.1.app"
           sudo xcode-select -s "$XCODE_PATH"
           xcodebuild -version
+          xcodebuild -showsdks
 
       - name: Install XcodeGen
-        run: brew install xcodegen
+        run: |
+          brew install xcodegen
 
       - name: Generate Xcode project
-        run: xcodegen generate
+        run: |
+          xcodegen generate
+
+      - name: Inspect project
+        run: |
+          xcodebuild -list -project HeartRateCSVImporter.xcodeproj
 
       - name: Build unsigned app
         run: |
-          xcodebuild             -project HeartRateCSVImporter.xcodeproj             -scheme HeartRateCSVImporter             -sdk iphoneos             -configuration Release             -derivedDataPath build             CODE_SIGNING_ALLOWED=NO             CODE_SIGNING_REQUIRED=NO             build
+          xcodebuild \
+            -project HeartRateCSVImporter.xcodeproj \
+            -scheme HeartRateCSVImporter \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build
 
       - name: Package IPA
         run: |
           mkdir -p Payload
-          cp -R build/Build/Products/Release-iphoneos/HeartRateCSVImporter.app Payload/
+          cp -R \
+            build/Build/Products/Release-iphoneos/HeartRateCSVImporter.app \
+            Payload/
+
           zip -r HeartRateCSVImporter-unsigned.ipa Payload
 
       - name: Upload IPA
