@@ -1,0 +1,20 @@
+name: HeartRateCSVImporter
+options:
+  deploymentTarget:
+    iOS: "17.0"
+targets:
+  HeartRateCSVImporter:
+    type: application
+    platform: iOS
+    sources:
+      - path: HeartRateCSVImporter
+    info:
+      path: HeartRateCSVImporter/Info.plist
+    entitlements:
+      path: HeartRateCSVImporter/HeartRateCSVImporter.entitlements
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.aryman.HeartRateCSVImporter
+        PRODUCT_NAME: HeartRateCSVImporter
+        SWIFT_VERSION: "5.0"
+        TARGETED_DEVICE_FAMILY: "1"
