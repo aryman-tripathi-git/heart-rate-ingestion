@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-26
+    runs-on: macos-15
 
     steps:
       - name: Checkout
@@ -13,8 +13,14 @@ jobs:
 
       - name: Select Xcode
         run: |
-          XCODE_PATH="/Applications/Xcode_26.0.1.app"
+          ls -d /Applications/Xcode*.app
+
+          XCODE_PATH=$(ls -d /Applications/Xcode_*.app | grep -v "Xcode_26" | head -n 1)
+
+          echo "Using Xcode: $XCODE_PATH"
+
           sudo xcode-select -s "$XCODE_PATH"
+
           xcodebuild -version
           xcodebuild -showsdks
 
@@ -46,6 +52,7 @@ jobs:
       - name: Package IPA
         run: |
           mkdir -p Payload
+
           cp -R \
             build/Build/Products/Release-iphoneos/HeartRateCSVImporter.app \
             Payload/
